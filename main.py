@@ -4,6 +4,7 @@ import cgi
 import datetime
 import webapp2
 import datetime
+#import tensorflow
 
 # [START imports]
 from flask import Flask, render_template, request
@@ -46,6 +47,29 @@ def getdata() :
         return "Thanks. data is %s" % data
     else:
         return "no json recieved\n"
+
+# [START expectation]
+@app.route('/expectation', methods=['GET', 'POST'])
+def expectation() :
+    app.logger.debug("data received...")
+    app.logger.debug(request.json)
+
+    data = request.json
+    futuredate = data['date']
+
+    # fetch database
+    entities = ndb.gql('SELECT date, value '
+                       'FROM FineDust ',)
+
+    x = []
+    y = []
+    for entity in entities:
+        x.append(entity.date)
+        y.append(entity.value)
+    logging.info(x)
+    logging.info(y)
+    return "Great."
+# [END expectation]
 
 # [START form]
 @app.route('/form')
