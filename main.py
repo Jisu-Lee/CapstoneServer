@@ -4,6 +4,8 @@ import cgi
 import datetime
 import webapp2
 import datetime
+#import numpy as np
+#import matplotlib.pyplot as plt
 #import tensorflow
 
 # [START imports]
@@ -18,7 +20,7 @@ class FineDust(ndb.Model):
   humidity = ndb.FloatProperty()
   temperature = ndb.FloatProperty()
   date = ndb.DateTimeProperty()
-  location = ndb.StringProperty()
+  location = ndb.StringProperty(indexed=True)
 # [END create_db]
 
 # [START create_app]
@@ -48,27 +50,46 @@ def getdata() :
     else:
         return "no json recieved\n"
 
+# [START graph]
+
+
+# [END graph]
+
 # [START expectation]
-@app.route('/expectation', methods=['GET', 'POST'])
+@app.route('/expectation')
 def expectation() :
+    '''
     app.logger.debug("data received...")
     app.logger.debug(request.json)
 
     data = request.json
     futuredate = data['date']
-
+'''
     # fetch database
     entities = ndb.gql('SELECT date, value '
-                       'FROM FineDust ',)
-
+                       'FROM FineDust '
+                       'WHERE location = \'HJRoom\'',)
     x = []
     y = []
     for entity in entities:
         x.append(entity.date)
         y.append(entity.value)
+    response = 'Average concentration at HyungJune\'s room : ' + str(sum(y)/len(y)) + '<br>'
+
+    entities = ndb.gql('SELECT date, value '
+               'FROM FineDust '
+               'WHERE location = \'6P\'',)
+    x = []
+    y = []
+    for entity in entities:
+        x.append(entity.date)
+        y.append(entity.value)
+
     logging.info(x)
     logging.info(y)
-    return "Great."
+   
+    response = response + 'Average concentration at 6P : ' + str(sum(y)/len(y)) + '\n'
+    return response
 # [END expectation]
 
 # [START form]

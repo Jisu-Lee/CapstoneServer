@@ -14,3 +14,9 @@ indexes:
   properties:
   - name: date
   - name: value
+
+- kind: FineDust
+  properties:
+  - name: location
+  - name: date
+  - name: value
